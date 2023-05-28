@@ -1,29 +1,49 @@
-import logo from "./logo.svg";
 import "./App.css";
 import { io } from "socket.io-client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 function App() {
-  useEffect(() => {
-    const socket = io("ws://localhost:5000");
+  const [msg, setMsg] = useState("");
+  const [to, setTo] = useState("");
+  const [socket, setSocket] = useState(null);
+  const [id, setId] = useState(null);
+  const [messages, setMessages] = useState([]);
 
-    socket.emit("hello", 10, '10');
+  useEffect(() => {
+    const socket = io("ws://localhost:5001");
+    setSocket(socket);
+
+    socket.on("connection", (id) => setId(id));
+    socket.on("message", (message) => {
+      setMessages(prev=> [message, ...prev]);
+    });
   }, []);
 
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>This is test message!</p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+        {id && <p>your id is: {id}</p>}
+        <input
+          type="text"
+          placeholder="message"
+          onChange={(e) => setMsg(e.target.value)}
+        />
+        <input
+          type="text"
+          placeholder="to"
+          onChange={(e) => setTo(e.target.value)}
+        />
+        <input
+          type="button"
+          onClick={() => {
+            socket.emit("message", {to, payload: msg});
+          }}
+          value="click"
         >
-          Learn React
-        </a>
-      </header>
+        </input>
+        <p>messages: </p>
+        <ul>
+          {messages.map(m=> <li>from: {m.from}, text: {m.payload}</li>)}
+        </ul>
     </div>
   );
 }

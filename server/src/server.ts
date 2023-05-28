@@ -1,7 +1,6 @@
 import dotenv from "dotenv";
 import configDatabase from "./database";
 import { createHttpServer } from "./init/httpServer";
-import { createWSServer } from "./init/wsServer";
 
 const configServer = () => {
   const port = Number(process.env.PORT);
@@ -10,10 +9,7 @@ const configServer = () => {
     process.exit(1);
   }
 
-  const serverInstance = createHttpServer();
-  const io = createWSServer(serverInstance);
-
-  serverInstance.listen(port, () =>
+  createHttpServer().listen(port, () =>
     console.log(`Server is listening on port: ${port}`)
   );
 };
