@@ -10,7 +10,11 @@ function App() {
   const [messages, setMessages] = useState([]);
 
   useEffect(() => {
-    const socket = io("ws://localhost:5001");
+    const socket = io("ws://localhost:5001", {
+      auth: {
+        was: "saw"
+      }
+    });
     setSocket(socket);
 
     socket.on("connection", (id) => setId(id));

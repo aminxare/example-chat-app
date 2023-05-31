@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 import configDatabase from "./database";
 import { createHttpServer } from "./init/httpServer";
+import { runBroker } from "./init/broker";
 
 const configServer = () => {
   const port = Number(process.env.PORT);
@@ -18,6 +19,7 @@ const run = async () => {
   dotenv.config();
   await configDatabase();
 
+  await runBroker()
   configServer();
 };
 

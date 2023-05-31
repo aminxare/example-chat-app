@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "dotenv": "^16.0.3",
+    "kafkajs": "^2.2.4",
     "mongoose": "^7.2.1",
     "socket.io": "^4.6.1"
   }
