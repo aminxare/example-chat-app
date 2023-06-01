@@ -4,7 +4,7 @@ import {
   Consumer,
   Producer,
 } from "../../../lib/broker";
-import messageModel from "@/models/message";
+import messageModel from "../../../models/message";
 
 export const listenMessages = async (
   producer: Producer,
