@@ -1,6 +1,8 @@
 {
+  "author": "aminxare",
+  "license": "MIT",
   "scripts": {
-    "dev": "concurrently 'cd server && yarn start' 'cd client && yarn start' 'cd chat-backend && yarn start'"
+    "dev": "concurrently 'cd server && yarn start' 'cd client && yarn run dev' 'cd chat-backend && yarn start'"
   },
   "devDependencies": {
     "concurrently": "^8.0.1"
