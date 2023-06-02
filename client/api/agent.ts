@@ -1,4 +1,5 @@
 import axios, { AxiosResponse } from "axios";
+import { Response } from "./@types";
 
 axios.defaults.baseURL = "http://localhost:5000/api";
 const responseBody = <T>(response: AxiosResponse<T>) => response.data;
@@ -13,7 +14,10 @@ const requests = {
 
 const auth = {
   login: (username: string, password: string) =>
-    requests.post("/login", { username, password }),
+    requests.post<Response<{ token: string }>>("/login", {
+      username,
+      password,
+    }),
 };
 
 const agent = {

@@ -1,10 +1,12 @@
 "use client";
 import agent from "@/api/agent";
+import useLocalStorage from "@/hooks/useLocalStorage";
 import React, { ChangeEventHandler, FormEventHandler, useState } from "react";
 
 const Page = () => {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [token, setToken] = useLocalStorage("token", null);
 
   const handelUsername: ChangeEventHandler<HTMLInputElement> = (e) => {
     e.preventDefault();
@@ -18,15 +20,15 @@ const Page = () => {
 
   const handelSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
-    console.log("username: ", username);
-    console.log("password: ", password);
     if (!username || !password) return;
 
-    const res = await agent.auth.login(username, password).catch((error) => {
+    try {
+      const res = await agent.auth.login(username, password);
+      setToken(res.data.token);
+    } catch (error: any) {
       console.log(error.response.data.message);
       console.log(error.response.status);
-    });
-    console.log("res: ", res);
+    }
   };
 
   return (
