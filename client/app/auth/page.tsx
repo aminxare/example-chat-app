@@ -3,6 +3,8 @@ import agent from "@/api/agent";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import React, { ChangeEventHandler, FormEventHandler, useState } from "react";
 
+import { TextField, Container, Button, Stack, Paper } from "@mui/material";
+
 const Page = () => {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -21,7 +23,7 @@ const Page = () => {
   const handelSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
     if (!username || !password) return;
-
+    
     try {
       const res = await agent.auth.login(username, password);
       setToken(res.data.token);
@@ -32,23 +34,41 @@ const Page = () => {
   };
 
   return (
-    <form onSubmit={handelSubmit}>
-      <label htmlFor="txtUsername">Username: </label>
-      <input
-        id="txtUsername"
-        type="text"
-        placeholder="Username"
-        onChange={handelUsername}
-      />
-      <label htmlFor="txtPassword">Password: </label>
-      <input
-        id="txtPassword"
-        type="text"
-        placeholder="Password"
-        onChange={handelPassword}
-      />
-      <button>Login</button>
-    </form>
+    <Container
+      sx={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        flexDirection: "column",
+        height: "90%",
+      }}
+    >
+      <form onSubmit={handelSubmit}>
+        <Paper style={{ padding: 20 }} elevation={3}>
+          <Stack spacing={2}>
+            <TextField
+              label="username"
+              type="text"
+              onChange={handelUsername}
+              id="txtUsername"
+              variant="standard"
+            />
+
+            <TextField
+              label="Password"
+              type="text"
+              id="txtPassword"
+              onChange={handelPassword}
+              variant="standard"
+            />
+
+            <Button type="submit" variant="outlined">
+              Login
+            </Button>
+          </Stack>
+        </Paper>
+      </form>
+    </Container>
   );
 };
 
