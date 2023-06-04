@@ -3,7 +3,7 @@ import agent from "@/api/agent";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import React, { ChangeEventHandler, FormEventHandler, useState } from "react";
 
-import { TextField, Container, Button, Stack, Paper } from "@mui/material";
+import { TextField, Container, Button, Stack, Paper, ButtonBase } from "@mui/material";
 
 const Page = () => {
   const [username, setUsername] = useState<string>("");
@@ -62,7 +62,7 @@ const Page = () => {
               variant="standard"
             />
 
-            <Button type="submit" variant="outlined">
+            <Button type="submit" variant="outlined" >
               Login
             </Button>
           </Stack>

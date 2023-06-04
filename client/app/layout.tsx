@@ -1,5 +1,7 @@
 import Nav from "@/components/Nav";
-import './globals.css'
+import ThemeProvider from "@/context/theme";
+import "./globals.css";
+
 
 export const metadata = {
   title: "Chat",
@@ -14,8 +16,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Nav />
-        {children}
+        <ThemeProvider>
+          <Nav />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );
