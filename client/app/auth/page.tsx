@@ -1,14 +1,22 @@
 "use client";
-import agent from "@/api/agent";
-import useLocalStorage from "@/hooks/useLocalStorage";
 import React, { ChangeEventHandler, FormEventHandler, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/Auth";
 
-import { TextField, Container, Button, Stack, Paper, ButtonBase } from "@mui/material";
+import {
+  TextField,
+  Container,
+  Button,
+  Stack,
+  Paper,
+} from "@mui/material";
 
 const Page = () => {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [token, setToken] = useLocalStorage("token", null);
+  const router = useRouter();
+
+  const { login } = useAuth();
 
   const handelUsername: ChangeEventHandler<HTMLInputElement> = (e) => {
     e.preventDefault();
@@ -23,11 +31,12 @@ const Page = () => {
   const handelSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
     if (!username || !password) return;
-    
+
     try {
-      const res = await agent.auth.login(username, password);
-      setToken(res.data.token);
+      const res = await login(username, password);
+      router.replace("/");
     } catch (error: any) {
+      // TODO: show message to the user
       console.log(error.response.data.message);
       console.log(error.response.status);
     }
@@ -62,7 +71,7 @@ const Page = () => {
               variant="standard"
             />
 
-            <Button type="submit" variant="outlined" >
+            <Button type="submit" variant="outlined">
               Login
             </Button>
           </Stack>
