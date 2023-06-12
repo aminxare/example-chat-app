@@ -1,6 +1,7 @@
 import Nav from "@/components/Nav";
-import ThemeProvider from "@/context/theme";
+import ThemeProvider from "@/context/Theme";
 import "./globals.css";
+import AppProvider from "@/context";
 
 
 export const metadata = {
@@ -16,10 +17,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <ThemeProvider>
+        <AppProvider>
           <Nav />
           {children}
-        </ThemeProvider>
+        </AppProvider>
       </body>
     </html>
   );

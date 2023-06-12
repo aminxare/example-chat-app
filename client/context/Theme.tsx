@@ -1,5 +1,5 @@
 "use client";
-import { createContext, useContext, useMemo, useState } from "react";
+import { ReactNode, createContext, useContext, useMemo, useState } from "react";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import getTheme from "@/theme";
 
@@ -9,10 +9,9 @@ const themeContext = createContext({
   changeMode: (mode: ThemeModes) => {},
 });
 
-
 export const useTheme = () => useContext(themeContext);
 
-const Provider = ({ children }: { children: React.ReactNode }) => {
+function Provider({ children }: { children: ReactNode }) {
   const [mode, setMode] = useState<ThemeModes>("light");
 
   const theme = useMemo(() => {
@@ -35,6 +34,6 @@ const Provider = ({ children }: { children: React.ReactNode }) => {
       </ThemeProvider>
     </themeContext.Provider>
   );
-};
+}
 
 export default Provider;
