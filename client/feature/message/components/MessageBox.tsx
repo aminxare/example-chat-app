@@ -9,7 +9,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { Padding, Send } from "@mui/icons-material";
+import { Send } from "@mui/icons-material";
 
 interface Props {
   onNewMessage: (msg: string) => void;

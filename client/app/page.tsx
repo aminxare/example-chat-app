@@ -18,7 +18,7 @@ export default function Home() {
       return;
     }
 
-    connect(token);
+    connect(token).then((id: any) => console.log('id: ', id)).catch(console.error);
   }, [token, router, connect]);
 
   return (

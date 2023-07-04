@@ -1,6 +1,6 @@
 import { Server, Socket } from "socket.io";
 import { DefaultEventsMap } from "socket.io/dist/typed-events";
-import { init, sendMessage, createKafkaProducer } from "../lib/broker";
+import Broker from "../lib/broker";
 import pipeline from "../utils/pipeline";
 
 interface Message {
@@ -10,17 +10,20 @@ interface Message {
 
 export const message =
   (io: Server) =>
-  (
-    socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>
-  ) => {
+  (socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>) =>
+  (broker: Broker) => {
     socket.on("message", async (msg: Message) => {
       const messageDetail = {
         ...msg,
         from: socket.id,
         date: new Date().toISOString(),
       };
-      const producer = pipeline([init, createKafkaProducer])();
-      await sendMessage(producer, "message-create", [messageDetail]);
+
+      // BUG: do not use in socket.on(message)
+      // it fires without any message
+      // await broker.sendMessage("message-create", [
+      //   JSON.stringify(messageDetail),
+      // ]);
 
       socket
         .to(msg.to)

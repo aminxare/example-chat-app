@@ -1,10 +1,12 @@
 import { listenMessages } from "../features";
-import { init, createKafkaConsumer, createKafkaProducer } from "../lib/broker";
+import Broker from "../lib/broker";
 
 export const runBroker = async () => {
-  const broker = init();
-  await listenMessages(
-    createKafkaProducer(broker),
-    createKafkaConsumer(broker, "server")
-  );
+  const broker = await Broker.new({
+    brokers: ["localhost:9092"],
+    groupID: "server",
+    topics: ["message-create", "validate-token", "token-validated"],
+  });
+
+  await listenMessages(broker);
 };
