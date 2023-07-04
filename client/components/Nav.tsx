@@ -18,12 +18,11 @@ import { useRouter } from "next/navigation";
 import { Menu as MenuIcon } from "@mui/icons-material";
 import { useState } from "react";
 import MessageList from "@/feature/message/components/MessageList";
-import { Button, Stack } from "@mui/material";
 
 function Nav() {
   const [open, setOpen] = useState(false);
   const { isLogin, logout } = useAuth();
-  const { changeMode } = useTheme();
+  const { changeMode, mode } = useTheme();
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
   const router = useRouter();
 
@@ -120,6 +119,7 @@ function Nav() {
               <MaterialUISwitch
                 sx={{ margin: "0 1em" }}
                 onChange={handleDarkMode}
+                checked = {mode === 'dark'}
               />
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>

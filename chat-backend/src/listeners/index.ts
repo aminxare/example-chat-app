@@ -7,7 +7,7 @@ const setListeners = (io: Server) => {
   io.on("connection", async (socket) => {
     const token = socket.handshake.auth.token;
     if (!token) return socket.emit("connection", null);
-    
+
     const broker = await Broker.new({
       brokers: ["localhost:9092"],
       groupID: "chat-backend",
@@ -20,10 +20,10 @@ const setListeners = (io: Server) => {
     await broker.startRecivingMessages(
       "token-validated",
       async ({ message }) => {
-        const { id, user } = JSON.parse(message.value?.toString()!);
+        const { id } = JSON.parse(message.value?.toString()!);
 
-        socket.to(id).emit("connection", { id, user });
-      }
+        socket.to(id).emit("connection", id);
+      },
     );
 
     message(io)(socket)(broker);

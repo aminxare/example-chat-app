@@ -22,14 +22,15 @@ function Provider({ children }: { children: ReactNode }) {
         token,
       },
     });
-    // socket.connect()
 
     return new Promise((resolve, reject) => {
-      socket.on("connection", (payload: any) => {
+      setTimeout(()=> {
+        reject("socket timeout")
+      }, 3000)
+      socket.on("connection", (id: string | null) => {
         // if id is falsy, It means the token is invalid
-        console.log(payload)
-        if (!payload.id) return reject("token is not valid, please sign up");
-        else return resolve(payload.id);
+        if (!id) return reject("token is not valid, please sign up");
+        else return resolve(id);
       });
     });
   };

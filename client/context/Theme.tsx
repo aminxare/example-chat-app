@@ -1,11 +1,12 @@
 "use client";
-import { ReactNode, createContext, useContext, useMemo, useState } from "react";
+import { ReactNode, createContext, useContext, useEffect, useMemo, useState } from "react";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import getTheme from "@/theme";
 
 type ThemeModes = "dark" | "light";
 
 const themeContext = createContext({
+  mode: "light",
   changeMode: (mode: ThemeModes) => {},
 });
 
@@ -22,9 +23,20 @@ function Provider({ children }: { children: ReactNode }) {
     setMode(mode);
   };
 
+  // retrive theme-mode from localstorage
+  useEffect(()=>{
+    const m = localStorage.getItem('theme-mode');
+    if(m === 'light' || m === 'dark') setMode(m);
+  }, [])
+  // save mode on localstorage
+  useEffect(()=>{
+    localStorage.setItem('theme-mode', mode)
+  },[mode])
+
   return (
     <themeContext.Provider
       value={{
+        mode,
         changeMode,
       }}
     >

@@ -26,7 +26,9 @@ export const listenMessages = async (broker: Broker) => {
     }
     try {
       const user = jwt.verify(token);
-      await broker.sendMessage("token-validated", JSON.stringify({ id, user }));
+      const payload = JSON.stringify({ id: user ? id : null });
+      
+      await broker.sendMessage("token-validated", payload);
     } catch (err) {
       await broker.sendMessage("token-validated", "{}");
     }
