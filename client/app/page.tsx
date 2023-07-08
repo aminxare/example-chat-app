@@ -13,12 +13,15 @@ export default function Home() {
   const { connect } = useSocket();
 
   useEffect(() => {
+    const replaceToAuth = () => router.replace("/auth");
     if (!token) {
-      router.replace("/auth");
+      replaceToAuth();
       return;
     }
 
-    connect(token).then((id: any) => console.log('id: ', id)).catch(console.error);
+    connect(token)
+      .then((id: any) => console.log("id: ", id))
+      .catch((err) => replaceToAuth());
   }, [token, router, connect]);
 
   return (
