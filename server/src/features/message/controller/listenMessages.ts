@@ -1,36 +1,35 @@
 import jwt from "../../../lib/jwt";
-import Broker from "../../../lib/broker";
-import messageModel from "../../../models/message";
 
-export const listenMessages = async (broker: Broker) => {
-  broker.startRecivingMessages("message-create", async ({ message }) => {
-    if (!message.value) return;
+type MessageHandler = (message: string, send: any) => Promise<void> | void;
 
-    const messageObj = JSON.parse(message.value?.toString());
-    const savedMessage = await messageModel().create({
-      text: messageObj.payload,
-      createdAt: messageObj.date,
-      // userid ...
-    });
+export const createMessage: MessageHandler = async (
+  message: string,
+  send
+) => {
+  const messageObj = JSON.parse(message);
+  // const savedMessage = await messageModel().create({
+  //   text: messageObj.payload,
+  //   createdAt: messageObj.date,
+  //   // userid ...
+  // });
 
-    await broker.sendMessage("message-created-id", [
-      JSON.stringify({ id: savedMessage.get("id") }),
-    ]);
-  });
+  await send("message-created-id", [
+    JSON.stringify('{ id: savedMessage.get("id") }'),
+  ]);
+};
 
-  broker.startRecivingMessages("validate-token", async ({ message }) => {
-    let { id, token } = JSON.parse(message.value?.toString()!);
+export const validateToken = async (message: string, send: any) => {
+  try {
+    let { id, token } = JSON.parse(message);
+    
     if (!token) {
-      await broker.sendMessage("token-validated", "{}");
+      await send("token-validated", "{}");
       return;
     }
-    try {
-      const user = jwt.verify(token);
-      const payload = JSON.stringify({ id: user ? id : null });
-      
-      await broker.sendMessage("token-validated", payload);
-    } catch (err) {
-      await broker.sendMessage("token-validated", "{}");
-    }
-  });
+    const user = jwt.verify(token);
+    const payload = JSON.stringify({ id: user ? id : null, user });
+    await send("token-validated", payload);
+  } catch (err) {
+    await send("token-validated", "{}");
+  }
 };

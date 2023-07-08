@@ -1,20 +1,10 @@
-import { Box, Button, Grid, Paper, Stack } from "@mui/material";
+import { Grid, Paper } from "@mui/material";
 import MessageList from "./MessageList";
-import { useState } from "react";
 import MessageBox from "./MessageBox";
-import { Message } from "../@types";
+import { useChat } from "@/context/Chats";
 
 export default function Chat() {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      text: "Hello",
-      date: Date.now().toString(),
-    },
-    {
-      text: "Hello",
-      date: Date.now().toString(),
-    },
-  ]);
+  const { messages, sendMessage } = useChat();
 
   return (
     <Grid container spacing={2} height={"90vh"}>
@@ -30,12 +20,9 @@ export default function Chat() {
       <Grid item sm={12} md={8}>
         <MessageBox
           messages={messages}
-          onNewMessage={(msg) =>
-            setMessages((p) => [
-              ...p,
-              { text: msg, date: Date.now().toString() },
-            ])
-          }
+          onNewMessage={(msg) => {
+            sendMessage(msg, '');
+          }}
         />
       </Grid>
     </Grid>

@@ -1,6 +1,6 @@
 import { Server, Socket } from "socket.io";
 import { DefaultEventsMap } from "socket.io/dist/typed-events";
-import Broker from "../lib/broker";
+// import Broker from "../lib/broker";
 import pipeline from "../utils/pipeline";
 
 interface Message {
@@ -11,7 +11,7 @@ interface Message {
 export const message =
   (io: Server) =>
   (socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>) =>
-  (broker: Broker) => {
+  (broker: any) => { // TODO: fix type
     socket.on("message", async (msg: Message) => {
       const messageDetail = {
         ...msg,

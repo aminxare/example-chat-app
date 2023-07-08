@@ -40,9 +40,7 @@ export const postLogin: Handler<loginBody> = async (req, res, next) => {
   }
 
   const { password: _, ...responseUser } = userObj.toJSON();
-  const token = jwt.sign({
-    responseUser,
-  });
+  const token = jwt.sign(responseUser);
 
   return res
     .status(isNewUser ? 201 : 200)

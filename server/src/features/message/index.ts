@@ -1,1 +1,1 @@
-export { listenMessages } from "./controller/listenMessages";
+export { createMessage, validateToken } from "./controller/listenMessages";

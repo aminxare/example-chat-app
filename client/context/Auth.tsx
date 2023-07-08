@@ -7,7 +7,9 @@ const authContext = createContext({
   isLogin: false,
   login: async (username: string, password: string) => {},
   logout: () => {},
-  getUser: () => {},
+  getUser: () => ({
+    username: "",
+  }),
 });
 
 export const useAuth = () => useContext(authContext);
@@ -29,7 +31,9 @@ function Provider({ children }: { children: React.ReactNode }) {
   };
 
   const getUser = () => {
-    return {};
+    return {
+      username: "testuser",
+    };
   };
 
   return (
