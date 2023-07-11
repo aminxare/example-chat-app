@@ -4,11 +4,6 @@ import jwt from "../../../lib/jwt";
 import { compare } from "../../../lib/bcrypt";
 import { Handler } from "../../../@types";
 
-interface signupBody {
-  username: string;
-  password: string;
-}
-
 interface loginBody {
   username: string;
   password: string;
@@ -44,5 +39,32 @@ export const postLogin: Handler<loginBody> = async (req, res, next) => {
 
   return res
     .status(isNewUser ? 201 : 200)
-    .send(response({ token }, isNewUser ? "user created!" : null));
+    .send(
+      response(
+        { token, user: responseUser },
+        isNewUser ? "user created!" : null
+      )
+    );
+};
+
+/**
+ * if token is valid return verified object
+ * otherwise return null
+ *
+ * @param req
+ * @param res
+ * @param next
+ * @returns
+ */
+export const verifyToken: Handler<{ token: string }> = async (
+  req,
+  res,
+  next
+) => {
+  const token = req.body.token;
+
+  if (!token) return res.status(400).send(response(null, "token is requried"));
+  const result = jwt.verify(token);
+
+  return res.status(200).send(response(result));
 };

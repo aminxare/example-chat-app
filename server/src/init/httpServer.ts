@@ -14,7 +14,7 @@ export const createHttpServer = () => {
 
   app.use(cors(corsOpt));
   app.use(express.json());
-  app.use("/api", authRoute);
+  app.use("/api/auth", authRoute);
   app.use(errorHandler);
 
   return createServer(app);

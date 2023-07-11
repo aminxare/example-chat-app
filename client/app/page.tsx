@@ -1,5 +1,6 @@
 "use client";
 
+import { useAuth } from "@/context/Auth";
 import { useSocket } from "@/context/Socket";
 import { Messages } from "@/feature/message";
 import useLocalStorage from "@/hooks/useLocalStorage";
@@ -8,21 +9,28 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 export default function Home() {
-  const [token] = useLocalStorage("token", null);
   const router = useRouter();
   const { connect } = useSocket();
+  const { verifyToken, getUser } = useAuth();
+  const [token] = useLocalStorage("token", null);
 
   useEffect(() => {
     const replaceToAuth = () => router.replace("/auth");
-    if (!token) {
-      replaceToAuth();
-      return;
-    }
+    (async function () {
+      if (!token) {
+        replaceToAuth();
+      } else {
+        if (!getUser()) {
+          const isTokenVerified = await verifyToken(token);
+          if (!isTokenVerified) replaceToAuth();
+        }
+      }
+    })();
 
     connect(token)
       .then((id: any) => console.log("id: ", id))
       .catch((err) => replaceToAuth());
-  }, [token, router, connect]);
+  }, [token, router, connect, verifyToken, getUser]);
 
   return (
     <Container sx={{ paddingTop: "1em" }}>
