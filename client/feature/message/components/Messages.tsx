@@ -17,7 +17,7 @@ export default function Chat() {
           <MessageList onSelect={(id) => console.log(id)} />
         </Paper>
       </Grid>
-      <Grid item sm={12} md={8}>
+      <Grid item xs={12} md={8}>
         <MessageBox
           messages={messages}
           onNewMessage={(msg) => {

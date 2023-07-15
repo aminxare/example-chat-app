@@ -1,12 +1,9 @@
 import { Theme } from "@emotion/react";
-import {
-  SxProps,
-  Box,
-  List,
-  Button,
-  Stack,
-} from "@mui/material";
+import { SxProps, Box, List, Stack, Button } from "@mui/material";
 import MessageListItem from "./MessageListItem";
+import { useChat } from "@/context/Chats";
+import CreateRoomDialog from "./CreateRoomDialog";
+import { useState } from "react";
 
 function MessageList({
   onSelect,
@@ -15,11 +12,25 @@ function MessageList({
   onSelect: (chatId: string) => void;
   sx?: SxProps<Theme>;
 }) {
+  const { createRoom, rooms } = useChat();
+  const [open, setOpen] = useState(false);
+
+  const handleDialogOpen = () => {
+    setOpen(true);
+  };
+
+  const handleDialogClose = () => {
+    setOpen(false);
+  };
+
+  const handleSubmitRoom = async (name: string | null) => {
+    if (!name) return;
+    await createRoom(name);
+  };
+
   return (
-    <Box
+    <Stack
       sx={{
-        display: "flex",
-        flexDirection: "column",
         justifyContent: "space-between",
         height: "100%",
       }}
@@ -33,22 +44,31 @@ function MessageList({
           "::-webkit-scrollbar": {
             display: "none",
           },
+          height: "100%",
         }}
       >
         <List sx={{ overflow: "hidden" }}>
-          <MessageListItem avatarSrc="" primary="Amin" secondary="text" onSelect={()=>{}} />
+          {rooms.map((r) => (
+            <MessageListItem
+              key={r.id}
+              roomId={r.id}
+              avatarSrc={r.avatar}
+              primary={r.name || " "}
+              secondary="text"
+            />
+          ))}
         </List>
       </Box>
 
-      <Stack marginTop={5} spacing={0.5}>
-        <Button variant="outlined" color="success">
-          Create
-        </Button>
-        <Button variant="outlined" color="error">
-          Delete
-        </Button>
-      </Stack>
-    </Box>
+      <CreateRoomDialog
+        onSubmit={handleSubmitRoom}
+        open={open}
+        onClose={handleDialogClose}
+      />
+      <Button variant="outlined" onClick={handleDialogOpen}>
+        Create Room
+      </Button>
+    </Stack>
   );
 }
 

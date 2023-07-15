@@ -1,26 +1,60 @@
-import { Avatar, ListItemText } from "@mui/material";
+"use client";
+import { Avatar, Collapse, List, ListItemText } from "@mui/material";
 import ListItem from "@mui/material/ListItem";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
 import ListItemButton from "@mui/material/ListItemButton";
-import React from "react";
+import React, { useState } from "react";
+import AddMemberDialog from "./AddMemberDialog";
+import { useChat } from "@/context/Chats";
 
 interface Props {
   primary: string;
   secondary: string;
-  avatarSrc: string;
-  onSelect: (id: string) => void;
+  roomId: string;
+  avatarSrc?: string;
 }
 
-function MessageListItem({ avatarSrc, primary, secondary, onSelect }: Props) {
+function MessageListItem({ avatarSrc, primary, secondary, roomId }: Props) {
+  const [open, setOpen] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
+  const { addMember } = useChat();
+
+  const handleDialogClose = () => setOpen(false);
+
+  const handleDialogOpen = () => {
+    setOpenDialog(true);
+  };
+
+  const handleAddMemberClick = async (username: string | null) => {
+    setOpenDialog(false);
+    if (!username) return;
+    await addMember(roomId, username);
+  };
+
   return (
-    <ListItem disablePadding>
-      <ListItemButton onClick={() => console.log("clicked")}>
-        <ListItemAvatar>
-          <Avatar alt="amin" src={avatarSrc} />
-        </ListItemAvatar>
-        <ListItemText primary={primary} secondary={secondary} />
-      </ListItemButton>
-    </ListItem>
+    <>
+      <ListItem disablePadding>
+        <ListItemButton onClick={() => setOpen((p) => !p)}>
+          <ListItemAvatar>
+            <Avatar alt={primary} src={avatarSrc} />
+          </ListItemAvatar>
+          <ListItemText primary={primary} secondary={secondary} />
+        </ListItemButton>
+      </ListItem>
+      <Collapse in={open} timeout={"auto"} unmountOnExit>
+        <List component={"div"} sx={{ pl: 4 }} disablePadding>
+          <ListItemButton>Open</ListItemButton>
+          <ListItemButton onClick={handleDialogOpen}>Add</ListItemButton>
+          <ListItemButton>Edit</ListItemButton>
+          <ListItemButton>Delete</ListItemButton>
+        </List>
+      </Collapse>
+      <AddMemberDialog
+        open={openDialog}
+        onClose={handleDialogClose}
+        onSubmit={handleAddMemberClick}
+      />
+    </>
   );
 }
 
