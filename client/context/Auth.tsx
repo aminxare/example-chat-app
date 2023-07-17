@@ -2,12 +2,7 @@
 import { User } from "@/@types";
 import agent from "@/api/agent";
 import useLocalStorage from "@/hooks/useLocalStorage";
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useState,
-} from "react";
+import { createContext, useCallback, useContext, useState } from "react";
 
 interface AuthContext {
   isLogin: boolean;
@@ -15,6 +10,7 @@ interface AuthContext {
   logout: () => void;
   getUser: () => User | null;
   verifyToken: (token: string) => Promise<boolean>;
+  getToken: () => string;
 }
 
 const authContext = createContext<AuthContext>({
@@ -23,6 +19,7 @@ const authContext = createContext<AuthContext>({
   logout: () => {},
   getUser: () => null,
   verifyToken: async (token) => false,
+  getToken: () => "",
 });
 
 export const useAuth = () => useContext(authContext);
@@ -67,6 +64,8 @@ function Provider({ children }: { children: React.ReactNode }) {
     return user;
   }, [user]);
 
+  const getToken = () => token;
+
   return (
     <authContext.Provider
       value={{
@@ -75,6 +74,7 @@ function Provider({ children }: { children: React.ReactNode }) {
         logout,
         getUser,
         verifyToken,
+        getToken,
       }}
     >
       {children}

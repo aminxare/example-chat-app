@@ -37,8 +37,7 @@ const Page = () => {
       router.replace("/");
     } catch (error: any) {
       // TODO: show message to the user
-      console.log(error.response.data.message);
-      console.log(error.response.status);
+      console.log(error)
     }
   };
 
