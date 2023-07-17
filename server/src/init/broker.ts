@@ -9,20 +9,13 @@ export const runBroker = async () => {
     "server"
   );
 
-  receive(async ({ topic, message }) => {
-    if (!message.value) return;
+  const { CREATE_MESSAGE, VALIDATE_TOKEN } = topics;
 
-    const { CREATE_MESSAGE, VALIDATE_TOKEN } = topics;
-    const messageString = message.value.toString();
-
-    switch (topic) {
-      case CREATE_MESSAGE:
-        createMessage(messageString, send);
-        break;
-
-      case VALIDATE_TOKEN:
-        validateToken(messageString, send);
-        break;
-    }
-  });
+  receive()
+    .on(CREATE_MESSAGE, (payload) =>
+      createMessage(payload.message.value?.toString(), send)
+    )
+    .on(VALIDATE_TOKEN, (payload) => {
+      validateToken(payload.message.value?.toString(), send);
+    });
 };

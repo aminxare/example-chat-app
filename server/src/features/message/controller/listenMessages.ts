@@ -3,9 +3,10 @@ import jwt from "../../../lib/jwt";
 type MessageHandler = (message: string, send: any) => Promise<void> | void;
 
 export const createMessage: MessageHandler = async (
-  message: string,
+  message: string | undefined,
   send
 ) => {
+  if (!message) return;
   const messageObj = JSON.parse(message);
   // const savedMessage = await messageModel().create({
   //   text: messageObj.payload,
@@ -18,10 +19,11 @@ export const createMessage: MessageHandler = async (
   ]);
 };
 
-export const validateToken = async (message: string, send: any) => {
+export const validateToken = async (message: string | undefined, send) => {
+  if (!message) return;
   try {
     let { id, token } = JSON.parse(message);
-    
+
     if (!token) {
       await send("token-validated", "{}");
       return;

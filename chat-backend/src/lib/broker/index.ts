@@ -1,11 +1,12 @@
 import { randomUUID } from "crypto";
+import EventEmitter from "events";
+
 import {
   Consumer,
   Kafka,
   Producer,
   logLevel,
   CompressionTypes,
-  EachMessagePayload,
   RecordMetadata,
 } from "kafkajs";
 
@@ -14,18 +15,35 @@ export interface Broker {
   receive: Receive;
 }
 
+type Receive = (fromBeginning?: boolean) => Receiver;
+
 type Send = (
   topic: string,
   messages: string | string[]
 ) => Promise<RecordMetadata[]>;
 
-type Receive = (
-  onEachMessage: (
-    eachMessagePayload: EachMessagePayload,
-    disconnect: () => void
-  ) => void,
-  fromBeginning?: boolean
-) => Promise<void>;
+class Receiver extends EventEmitter {
+  private static _instance: Receiver;
+
+  private constructor(private consumer: Consumer, private topics: string[]) {
+    super();
+  }
+
+  static instance(consumer: Consumer, topics: string[]) {
+    if (this._instance) return this._instance;
+    return new Receiver(consumer, topics);
+  }
+
+  async run(fromBeginning = true) {
+    await this.consumer.connect();
+    await this.consumer.subscribe({ topics: this.topics, fromBeginning });
+    await this.consumer.run({
+      eachMessage: async (payload) => {
+        this.emit(payload.topic, payload);
+      },
+    });
+  }
+}
 
 const createSender =
   (producer: Producer) =>
@@ -44,15 +62,11 @@ const createSender =
 
 const createReceiver =
   (consumer: Consumer) =>
-  (topics: string[]): Receive =>
-  async (onEachMessage, fromBeginning = true) => {
-    await consumer.connect();
-    await consumer.subscribe({ topics, fromBeginning });
-    await consumer.run({
-      eachMessage: async (payload) => {
-        onEachMessage(payload, consumer.disconnect);
-      },
-    });
+  (topics: string[]) =>
+  (fromBeginning = true) => {
+    const receiver = Receiver.instance(consumer, topics);
+    receiver.run(fromBeginning);
+    return receiver;
   };
 
 export const createMessager = (
@@ -67,6 +81,7 @@ export const createMessager = (
     logLevel: logLevel.NOTHING,
   });
 
+  const consumer = kafka.consumer({ groupId });
   const send = createSender(kafka.producer());
   const receive = createReceiver(kafka.consumer({ groupId }))(topics);
 

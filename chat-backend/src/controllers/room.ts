@@ -2,22 +2,18 @@ import { Server, Socket } from "socket.io";
 import { DefaultEventsMap } from "socket.io/dist/typed-events";
 import { Broker } from "../lib/broker";
 
-interface Message {
-  payload: unknown;
-  to: string;
+interface RooCreatePayload {
+  userId: number;
+  name: string;
 }
 
-export const message =
+export const room =
   (io: Server) =>
   (socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>) =>
   (broker: Broker) => {
-    socket.on("message", async (msg: Message) => {
-      const messageDetail = {
-        ...msg,
-        from: socket.id,
-        date: new Date().toISOString(),
-      };
-      console.log(msg)
+    socket.on("roomCreate", async (msg: RooCreatePayload) => {
+      // const token
+      // console.log(msg)
 
       // await broker.sendMessage("message-create", [
       //   JSON.stringify(messageDetail),

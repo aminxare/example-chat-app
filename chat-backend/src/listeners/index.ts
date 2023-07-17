@@ -28,18 +28,14 @@ const setListeners = (io: Server) => {
 
     const payload = JSON.stringify({ token, id: socket.id });
 
-    // check is user logged in
+    // checking is user logged in
     broker.send("validate-token", payload);
-    broker.receive(({ message, topic }) => {
+
+    broker.receive().on(topics.TOKEN_VALIDATION, ({ message }) => {
       const messageString = message.value?.toString()
       if (!messageString) return;
-
-      switch (topic) {
-        case topics.TOKEN_VALIDATION:
-          handleTokenValidationRes(messageString, socket);
-          break;
-      }
-    });
+      handleTokenValidationRes(messageString, socket)
+    })
 
     message(io)(socket)(broker);
   });

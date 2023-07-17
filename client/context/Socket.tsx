@@ -1,11 +1,6 @@
 "use client";
 import { io, Socket } from "socket.io-client";
-import {
-  ReactNode,
-  createContext,
-  useContext,
-  useState,
-} from "react";
+import { ReactNode, createContext, useContext, useState } from "react";
 
 const sleep = (seconds: number) =>
   new Promise((resolve, _) => setTimeout(resolve, seconds * 1000));
@@ -14,6 +9,12 @@ interface SocketContext {
   connect: (token: string) => Promise<string>;
   getId: () => string | null;
   connected: boolean;
+  send: (
+    event: string,
+    payload: { [key: string]: any },
+    cb?: (res: any) => void
+  ) => void;
+  receive: (event: string, cb: (...messages: any[]) => void) => void;
 }
 
 const socketContext = createContext<SocketContext>({
@@ -24,6 +25,8 @@ const socketContext = createContext<SocketContext>({
     return "";
   },
   connected: false,
+  send: () => {},
+  receive: () => {},
 });
 
 export const useSocket = () => useContext(socketContext);
@@ -64,6 +67,10 @@ function Provider({ children }: { children: ReactNode }) {
       }
     });
 
+    socket.on("connect_error", (err) => {
+      console.log("socket connection error: ", err.message); // prints the message associated with the error
+    });
+
     return socket;
   };
 
@@ -84,8 +91,27 @@ function Provider({ children }: { children: ReactNode }) {
     });
   };
 
+  const send = (
+    event: string,
+    payload: { [key: string]: any },
+    cb?: (res: any) => void
+  ) => {
+    if (!connected) throw new Error("socket not connected");
+
+    if (!!cb) socket.emit(event, payload, cb);
+    else socket.emit(event, payload);
+  };
+
+  const receive = (event: string, cb: (...args: any[]) => void) => {
+    if (!connected) throw new Error("socket not connected");
+
+    socket.on(event, cb);
+  };
+
   return (
-    <socketContext.Provider value={{ connect, getId, connected }}>
+    <socketContext.Provider
+      value={{ connect, getId, connected, send, receive }}
+    >
       {children}
     </socketContext.Provider>
   );

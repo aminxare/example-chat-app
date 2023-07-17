@@ -29,7 +29,7 @@ function Provider({ children }: { children: ReactNode }) {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
 
-  const { getId } = useSocket();
+  const { getId, send, receive } = useSocket();
   const { getUser, getToken } = useAuth();
 
   /**
@@ -63,11 +63,14 @@ function Provider({ children }: { children: ReactNode }) {
   const createRoom = async (name: string) => {
     const userId = getUser()?.id;
     if (!userId) throw new Error("userId not found, login again!");
-    const res = await agent.room.create(userId, name, getToken());
-    const room = res.data;
-    setRooms((pvRooms) => [...pvRooms, room]);
 
-    return room;
+    send("createRoom", { userId, name, token: getToken() }, (res)=> {
+      console.log(res);
+    });
+    return null;
+    // setRooms((pvRooms) => [...pvRooms, room]);
+
+    // return room;
   };
 
   const addMember = async (roomId: string, username: string) => {
