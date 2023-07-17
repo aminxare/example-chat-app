@@ -10,7 +10,7 @@ import { useEffect } from "react";
 
 export default function Home() {
   const router = useRouter();
-  const { connect } = useSocket();
+  const { connect, connected } = useSocket();
   const { verifyToken, getUser } = useAuth();
   const [token] = useLocalStorage("token", null);
 
@@ -26,11 +26,12 @@ export default function Home() {
         }
       }
     })();
-
-    connect(token)
-      .then((id: any) => console.log("id: ", id))
-      .catch((err) => replaceToAuth());
-  }, [token, router, connect, verifyToken, getUser]);
+    
+    if (!connected)
+      connect(token)
+        .then((id: any) => console.log("id: ", id))
+        .catch((err) => replaceToAuth());
+  }, [token, router, connect, verifyToken, getUser, connected]);
 
   return (
     <Container sx={{ paddingTop: "1em" }}>
