@@ -1,18 +1,6 @@
-import axios, { AxiosResponse } from "axios";
-import { LoginResponse, Response } from "./@types";
-import { User } from "@/@types";
-
-axios.defaults.baseURL = "http://localhost:5000/api";
-const responseBody = <T>(response: AxiosResponse<T>) => response.data;
-
-const requests = {
-  get: <T>(url: string) => axios.get<Response<T>>(url).then(responseBody),
-  post: <T>(url: string, body: {}) =>
-    axios.post<Response<T>>(url, body).then(responseBody),
-  put: <T>(url: string, body: {}) =>
-    axios.put<Response<T>>(url, body).then(responseBody),
-  del: <T>(url: string) => axios.delete<Response<T>>(url).then(responseBody),
-};
+import { LoginResponse } from "./@types";
+import { User, Room } from "@/@types";
+import requests from "./requests";
 
 const auth = {
   login: (username: string, password: string) =>
@@ -25,8 +13,28 @@ const auth = {
     requests.post<User>("/auth/verify-token", { token }),
 };
 
+const room = {
+  create: (creatorId: number, name: string, token: string) =>
+    requests.post<Room>(
+      "/room",
+      { creatorId, name },
+      {
+        Authorization: `Bearer ${token}`,
+      }
+    ),
+  addMember: (roomId: string, username: string, token: string) =>
+    requests.post<boolean>(
+      `/room/${roomId}/add`,
+      { username },
+      {
+        Authorization: `Bearer ${token}`,
+      }
+    ),
+};
+
 const agent = {
   auth,
+  room,
 };
 
 export default agent;
