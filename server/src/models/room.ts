@@ -25,6 +25,13 @@ export const schema = () =>
         },
         allowNull: false,
       },
+      isActive: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true,
+      },
+      avatar: {
+        type: DataTypes.STRING,
+      }
     },
     options: {},
   });

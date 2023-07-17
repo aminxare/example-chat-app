@@ -64,7 +64,13 @@ export const verifyToken: Handler<{ token: string }> = async (
   const token = req.body.token;
 
   if (!token) return res.status(400).send(response(null, "token is requried"));
-  const result = jwt.verify(token);
+  const result:any = jwt.verify(token);
+  
+  const userObj = await user().findByPk(result.id)
+
+  if(!userObj){
+    return res.status(404).send(response('user not found'))
+  }
 
   return res.status(200).send(response(result));
 };

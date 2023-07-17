@@ -13,6 +13,7 @@ export const response = (data: unknown, message?: string | null) => {
   return res;
 };
 
+// TODO: use it in room controllers
 export const error = (
   message: string,
   statusCode: number = 500,

@@ -1,10 +1,19 @@
-import { ResponseError } from "../helpers/response";
+import { ErrorHandler } from "@/@types";
+import { ResponseError, response } from "../helpers/response";
 
-const errorHandler = (err: ResponseError, req, res, next) => {
-  const { message } = err;
-  res.status(err.statusCode || 500).send({
+const errorHandler: ErrorHandler<unknown> = (
+  err: ResponseError,
+  req,
+  res,
+  next
+) => {
+  const { message, data } = err;
+  const payload = {
     message,
-  });
+    data,
+  };
+
+  res.status(err.statusCode || 500).send(response(payload));
   next();
 };
 
