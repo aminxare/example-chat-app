@@ -60,11 +60,12 @@ function Provider({ children }: { children: React.ReactNode }) {
     setToken(null);
   };
 
+  // TODO: send http post to get user with token in header
   const getUser = useCallback(() => {
     return user;
   }, [user]);
 
-  const getToken = () => token;
+  const getToken = useCallback(() => token, [token]);
 
   return (
     <authContext.Provider

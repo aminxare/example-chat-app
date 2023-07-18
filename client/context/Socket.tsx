@@ -1,12 +1,21 @@
 "use client";
 import { io, Socket } from "socket.io-client";
-import { ReactNode, createContext, useContext, useState } from "react";
+import {
+  ReactNode,
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
+import { useAuth } from "./Auth";
+import { useLayout } from "./Layout";
 
 const sleep = (seconds: number) =>
   new Promise((resolve, _) => setTimeout(resolve, seconds * 1000));
 
 interface SocketContext {
-  connect: (token: string) => Promise<string>;
+  connect: (token: string) => void;
   getId: () => string | null;
   connected: boolean;
   send: (
@@ -18,8 +27,8 @@ interface SocketContext {
 }
 
 const socketContext = createContext<SocketContext>({
-  async connect(token: string) {
-    return "";
+  connect(token: string) {
+    return;
   },
   getId() {
     return "";
@@ -32,81 +41,95 @@ const socketContext = createContext<SocketContext>({
 export const useSocket = () => useContext(socketContext);
 
 function Provider({ children }: { children: ReactNode }) {
+  const { getToken } = useAuth();
   const [connected, setConnected] = useState<boolean>(false);
-
-  let socket: Socket;
+  const [socket, setSocket] = useState<Socket | null>(null);
+  const { snack } = useLayout();
 
   const getId = () => {
     if (!socket) return null;
     return socket.id;
   };
 
-  const _init = (token: string) => {
+  const _init = useCallback((token: string) => {
     const url = process.env.SERVER_URI;
 
     if (!url) throw new Error("socket url has not setted");
-    socket = io(url, {
+    const s = io(url, {
       auth: {
         token,
       },
     });
+    setSocket(s);
+    setConnected(true);
 
-    socket.on("disconnect", async (reason) => {
-      console.log("socket disconnected: ", reason);
-      setConnected(false);
+    return s;
+  }, []);
 
-      while (true) {
-        await sleep(0.3);
-        if (socket.connected) {
-          setConnected(true);
-
-          // TODO: call chat-backend to know the new id
-          console.log(socket.id);
-          return;
-        }
-      }
-    });
-
-    socket.on("connect_error", (err) => {
-      console.log("socket connection error: ", err.message); // prints the message associated with the error
-    });
-
-    return socket;
-  };
-
-  const connect = (token: string) => {
-    socket = _init(token);
-
-    return new Promise<string>((resolve, reject) => {
-      socket.on("connection", (id: string | null) => {
-        // if id is falsy, It means the token is invalid
-        if (!id) {
-          setConnected(false);
-          return reject("token is not valid, please sign up");
-        } else {
-          setConnected(true);
-          return resolve(id);
-        }
-      });
-    });
-  };
+  const connect = useCallback(
+    (token: string) => {
+      _init(token);
+    },
+    [_init]
+  );
 
   const send = (
     event: string,
     payload: { [key: string]: any },
     cb?: (res: any) => void
   ) => {
-    if (!connected) throw new Error("socket not connected");
-
+    if (!connected || !socket) throw new Error("socket not connected");
     if (!!cb) socket.emit(event, payload, cb);
     else socket.emit(event, payload);
   };
 
   const receive = (event: string, cb: (...args: any[]) => void) => {
-    if (!connected) throw new Error("socket not connected");
+    if (!connected || !socket) throw new Error("socket not connected");
 
     socket.on(event, cb);
   };
+
+  // connecting if token is exits
+  useEffect(() => {
+    const token = getToken();
+    if (token) connect(token);
+  }, [getToken, connect]);
+
+  // init socket after creation
+  useEffect(() => {
+    if (socket) {
+      socket.on("connection", (id: string) => {
+        setConnected(true);
+        snack({ message: `Socket ID: ${id}` });
+      });
+
+      socket.on("disconnect", async (reason) => {
+        snack({
+          message: "socket disconnected: " + reason,
+          serverity: "error",
+        });
+        setConnected(false);
+
+        while (true) {
+          await sleep(3);
+          if (socket.connected) {
+            setConnected(true);
+
+            // TODO: call server to know the new id
+            snack({ message: "Socket ID: " + socket.id });
+            return;
+          }
+        }
+      });
+
+      socket.on("connect_error", (err) => {
+        snack({
+          message: "socket connection error: " + err.message,
+          serverity: "error",
+        });
+      });
+    }
+  }, [snack, socket]);
 
   return (
     <socketContext.Provider
