@@ -44,6 +44,7 @@ function MessageListItem({ avatarSrc, primary, secondary, roomId }: Props) {
       <Collapse in={open} timeout={"auto"} unmountOnExit>
         <List component={"div"} sx={{ pl: 4 }} disablePadding>
           <ListItemButton>Open</ListItemButton>
+          {/* TODO: Add, edit, delete just is avaible for creator*/}
           <ListItemButton onClick={handleDialogOpen}>Add</ListItemButton>
           <ListItemButton>Edit</ListItemButton>
           <ListItemButton>Delete</ListItemButton>

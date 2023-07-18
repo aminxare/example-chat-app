@@ -21,7 +21,7 @@ interface SocketContext {
   send: (
     event: string,
     payload: { [key: string]: any },
-    cb?: (res: any) => void
+    cb?: (err: string | null, res: any) => void
   ) => void;
   receive: (event: string, cb: (...messages: any[]) => void) => void;
 }
@@ -72,7 +72,7 @@ function Provider({ children }: { children: ReactNode }) {
   const send = (
     event: string,
     payload: { [key: string]: any },
-    cb?: (res: any) => void
+    cb?: (err: string | null, res: any) => void
   ) => {
     if (!connected || !socket) throw new Error("socket not connected");
     if (!!cb) socket.emit(event, payload, cb);
