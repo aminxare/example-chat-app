@@ -1,4 +1,4 @@
-import { Handler } from "@/@types";
+import { Handler } from "../../../@types";
 import { error, response } from "../../../helpers/response";
 import room from "../../../models/room";
 import user from "../../../models/user";

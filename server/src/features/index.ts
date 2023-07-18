@@ -1,4 +1,4 @@
 export { authRouter } from "./user";
-export { roomRouter } from "./room";
+export { roomRouter, createRoomListener } from "./room";
 
 export { createMessage, validateToken } from "./message";

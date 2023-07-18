@@ -5,6 +5,7 @@ import { useSocket } from "./Socket";
 import { useAuth } from "./Auth";
 import agent from "@/api/agent";
 import { Room } from "@/@types";
+import { useLayout } from "./Layout";
 
 interface ChatContext {
   messages: Message[];
@@ -31,6 +32,9 @@ function Provider({ children }: { children: ReactNode }) {
 
   const { getId, send, receive } = useSocket();
   const { getUser, getToken } = useAuth();
+  const { snack } = useLayout();
+
+  const addRoom = (room: Room) => setRooms((pRooms) => [...pRooms, room]);
 
   /**
    *
@@ -61,16 +65,15 @@ function Provider({ children }: { children: ReactNode }) {
   };
 
   const createRoom = async (name: string) => {
-    const userId = getUser()?.id;
-    if (!userId) throw new Error("userId not found, login again!");
-
-    send("createRoom", { userId, name, token: getToken() }, (res)=> {
-      console.log(res);
+    return new Promise<Room>((resolve, reject) => {
+      send("createRoom", { name }, (res: Room | string) => {
+        if (typeof res === "string") {
+          return snack({ message: res.toString(), serverity: "error" });
+        }
+        addRoom(res);
+        resolve(res);
+      });
     });
-    return null;
-    // setRooms((pvRooms) => [...pvRooms, room]);
-
-    // return room;
   };
 
   const addMember = async (roomId: string, username: string) => {

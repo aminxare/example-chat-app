@@ -27,12 +27,8 @@ interface SocketContext {
 }
 
 const socketContext = createContext<SocketContext>({
-  connect(token: string) {
-    return;
-  },
-  getId() {
-    return "";
-  },
+  connect(token: string) {},
+  getId: () => "",
   connected: false,
   send: () => {},
   receive: () => {},

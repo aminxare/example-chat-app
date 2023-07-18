@@ -6,13 +6,23 @@ let UserRoom: ModelStatic<Model<any, any>>;
 export const priority = 3;
 
 const table = () => ({
-  userId: {
-    type: DataTypes.INTEGER,
-    references: {
-      model: user(),
-      key: "id",
-    },
-  }
+  // userId: {
+  //   type: DataTypes.INTEGER,
+  //   primaryKey: true,
+  //   references: {
+  //     model: user(),
+  //     key: "id",
+  //   },
+  // },
+
+  // roomId: {
+  //   type: DataTypes.INTEGER,
+  //   primaryKey: true,
+  //   references: {
+  //     model: room(),
+  //     key: "id",
+  //   },
+  // },
 });
 
 export const schema = () =>

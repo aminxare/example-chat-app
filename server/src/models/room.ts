@@ -5,6 +5,10 @@ let Room: ModelStatic<Model<any, any>>;
 // creatorId is refrencing to users
 export const priority = 2;
 
+export const scopes = () => ({
+  response: "response",
+});
+
 export const schema = () =>
   Object.freeze({
     tableName: "room",
@@ -31,9 +35,16 @@ export const schema = () =>
       },
       avatar: {
         type: DataTypes.STRING,
-      }
+      },
     },
-    options: {},
+    options: {
+      scopes: {
+        [scopes().response]: {
+          // don't return in responses to client
+          attributes: { exclude: ["isActive"] },
+        },
+      },
+    },
   });
 
 export const afterDefine = (model: ModelStatic<Model<any, any>>) => {

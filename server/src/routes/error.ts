@@ -1,4 +1,4 @@
-import { ErrorHandler } from "@/@types";
+import { ErrorHandler } from "../@types";
 import { ResponseError, response } from "../helpers/response";
 
 const errorHandler: ErrorHandler<unknown> = (

@@ -12,6 +12,7 @@ export const room =
   (socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>) =>
   (broker: Broker) => {
     socket.on("roomCreate", async (msg: RooCreatePayload) => {
+      console.log('create room')
       // const token
       // console.log(msg)
 

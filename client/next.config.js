@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     env: {
-        SERVER_URI: "http://localhost:5001"
+        SERVER_URI: "http://localhost:5000"
     }
 }
 
