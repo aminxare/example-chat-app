@@ -3,7 +3,6 @@ import { Message } from "@/feature/message/@types";
 import { ReactNode, createContext, useContext, useState } from "react";
 import { useSocket } from "./Socket";
 import { useAuth } from "./Auth";
-import agent from "@/api/agent";
 import { Room } from "@/@types";
 import { useLayout } from "./Layout";
 
@@ -66,9 +65,9 @@ function Provider({ children }: { children: ReactNode }) {
 
   const createRoom = async (name: string) => {
     return new Promise<Room>((resolve, reject) => {
-      send("createRoom", { name }, (res: Room | string) => {
-        if (typeof res === "string") {
-          return snack({ message: res.toString(), serverity: "error" });
+      send("room:createRoom", { name }, (err, res: Room) => {
+        if (err) {
+          return snack({ message: err, serverity: "error" });
         }
         addRoom(res);
         resolve(res);
@@ -77,8 +76,17 @@ function Provider({ children }: { children: ReactNode }) {
   };
 
   const addMember = async (roomId: string, username: string) => {
-    const res = await agent.room.addMember(roomId, username, getToken());
-    return res.data;
+    return new Promise<boolean>((resolve, reject) => {
+      send("room:addMember", { roomId, username }, (err, res) => {
+        if (err) {
+          snack({ message: err, serverity: "error" });
+          return reject(err);
+        } else {
+          snack({ message: "User added", serverity: "success" });
+          return resolve(res);
+        }
+      });
+    });
   };
 
   return (
