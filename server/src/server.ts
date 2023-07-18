@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import configDatabase from "./database";
 import { createHttpServer } from "./init/httpServer";
-import { runBroker } from "./init/broker";
+// import { runBroker } from "./init/broker";
 import { createWSServer } from "./init/WSServer";
 
 const configServer = () => {
@@ -23,7 +23,8 @@ const run = async () => {
   dotenv.config();
   await configDatabase();
 
-  await runBroker();
+  // uncomment it for use kafka
+  // await runBroker();
   configServer();
 };
 
