@@ -3,6 +3,7 @@ import configDatabase from "./database";
 import { createHttpServer } from "./init/httpServer";
 // import { runBroker } from "./init/broker";
 import { createWSServer } from "./init/WSServer";
+import connect from "./database/redis";
 
 const configServer = () => {
   const port = Number(process.env.PORT);
@@ -21,6 +22,7 @@ const configServer = () => {
 
 const run = async () => {
   dotenv.config();
+  connect();
   await configDatabase();
 
   // uncomment it for use kafka
