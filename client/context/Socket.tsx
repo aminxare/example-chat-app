@@ -23,15 +23,15 @@ interface SocketContext {
     payload: { [key: string]: any },
     cb?: (err: string | null, res: any) => void
   ) => void;
-  receive: (event: string, cb: (...messages: any[]) => void) => void;
+  addEventListener: (event: string, listener: (...args: any[]) => void) => void;
 }
 
 const socketContext = createContext<SocketContext>({
-  connect(token: string) {},
+  connect() {},
   getId: () => "",
   connected: false,
   send: () => {},
-  receive: () => {},
+  addEventListener: () => {},
 });
 
 export const useSocket = () => useContext(socketContext);
@@ -79,17 +79,25 @@ function Provider({ children }: { children: ReactNode }) {
     else socket.emit(event, payload);
   };
 
-  const receive = (event: string, cb: (...args: any[]) => void) => {
-    if (!connected || !socket) throw new Error("socket not connected");
-
-    socket.on(event, cb);
-  };
+  const addEventListener = useCallback(
+    (event: string, listener: (...args: any[]) => void) => {
+      if (!socket) return;
+      socket.on(event, listener);
+    },
+    [socket]
+  );
 
   // connecting if token is exits
   useEffect(() => {
     const token = getToken();
     if (token) connect(token);
+    else setSocket(null);
   }, [getToken, connect]);
+
+  // if not loged in
+  useEffect(() => {
+    if (!getToken() && socket) socket.disconnect();
+  }, [socket, getToken]);
 
   // init socket after creation
   useEffect(() => {
@@ -129,7 +137,7 @@ function Provider({ children }: { children: ReactNode }) {
 
   return (
     <socketContext.Provider
-      value={{ connect, getId, connected, send, receive }}
+      value={{ connect, getId, connected, send, addEventListener }}
     >
       {children}
     </socketContext.Provider>

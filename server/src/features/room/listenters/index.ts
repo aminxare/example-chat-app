@@ -1,3 +1,4 @@
+import { getSocketId } from "../../../database/redis/connection";
 import room from "../../../models/room";
 import user from "../../../models/user";
 import { Socket } from "socket.io";
@@ -53,6 +54,10 @@ export const addMemberListener: socketListenser =
     if (!roomObj) return cb("room not found");
     if (roomObj.get("creatorId") !== creatorId) return cb("not authorized");
     await roomObj["addUser"](await userObj);
+
+    const socketId = await getSocketId(username);
+    // if user is online
+    if (socketId) socket.to(socketId).emit("room:added", roomObj.toJSON());
 
     cb(null, true);
   };

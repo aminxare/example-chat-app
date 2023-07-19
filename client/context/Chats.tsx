@@ -1,6 +1,12 @@
 "use client";
 import { Message } from "@/feature/message/@types";
-import { ReactNode, createContext, useContext, useState } from "react";
+import {
+  ReactNode,
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { useSocket } from "./Socket";
 import { useAuth } from "./Auth";
 import { Room } from "@/@types";
@@ -29,7 +35,7 @@ function Provider({ children }: { children: ReactNode }) {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
 
-  const { getId, send, receive } = useSocket();
+  const { getId, send, addEventListener } = useSocket();
   const { getUser, getToken } = useAuth();
   const { snack } = useLayout();
 
@@ -88,6 +94,19 @@ function Provider({ children }: { children: ReactNode }) {
       });
     });
   };
+
+  useEffect(() => {
+    addEventListener("room:added", (room: Room) => {
+      addRoom(room);
+    });
+  }, [addEventListener]);
+
+  useEffect(() => {
+    if (!getToken()) {
+      setMessages([]);
+      setRooms([]);
+    }
+  }, [getToken]);
 
   return (
     <chatContext.Provider
