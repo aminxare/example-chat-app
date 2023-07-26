@@ -6,7 +6,7 @@ import CreateRoomDialog from "./CreateRoomDialog";
 import { SxProps, Box, List, Stack, Button } from "@mui/material";
 
 function MessageList({ sx }: { sx?: SxProps<Theme> }) {
-  const { createRoom, rooms } = useChat();
+  const { createRoom, rooms, selectedRoomId } = useChat();
   const [open, setOpen] = useState(false);
 
   const handleDialogOpen = () => {
@@ -49,6 +49,7 @@ function MessageList({ sx }: { sx?: SxProps<Theme> }) {
               avatarSrc={r.avatar}
               primary={r.name || " "}
               secondary="text"
+              bgColor={r.id === selectedRoomId ? "teal" : ""}
             />
           ))}
         </List>

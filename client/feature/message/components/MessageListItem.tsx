@@ -18,10 +18,17 @@ interface Props {
   primary: string;
   secondary: string;
   roomId: string;
+  bgColor?: string;
   avatarSrc?: string;
 }
 
-function MessageListItem({ avatarSrc, primary, secondary, roomId }: Props) {
+function MessageListItem({
+  avatarSrc,
+  primary,
+  secondary,
+  roomId,
+  bgColor,
+}: Props) {
   const [open, setOpen] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
   const { addMember, selectRoom } = useChat();
@@ -52,7 +59,10 @@ function MessageListItem({ avatarSrc, primary, secondary, roomId }: Props) {
   return (
     <>
       <ListItem disablePadding>
-        <ListItemButton onClick={handleSelectRoom} sx={{ borderRadius: 1 }}>
+        <ListItemButton
+          onClick={handleSelectRoom}
+          sx={{ borderRadius: 1, backgroundColor: bgColor }}
+        >
           <ListItemAvatar>
             <Avatar alt={primary} src={avatarSrc} />
           </ListItemAvatar>
