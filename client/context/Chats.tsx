@@ -1,10 +1,12 @@
 "use client";
-import { Message } from "@/feature/message/@types";
+import { Message, MessageGroup } from "@/feature/message/@types";
 import {
   ReactNode,
   createContext,
+  useCallback,
   useContext,
   useEffect,
+  useMemo,
   useState,
 } from "react";
 import { useSocket } from "./Socket";
@@ -14,10 +16,11 @@ import { useLayout } from "./Layout";
 import agent from "@/api/agent";
 
 interface ChatContext {
-  messages: Message[];
   rooms: Room[];
-  selectedId: string | null;
+  selectedRoomId: string | null;
+  messageGroup: MessageGroup;
 
+  getMessages: () => Message[] | null;
   selectRoom: (roomId: string) => void;
   createRoom: (name: string) => Promise<Room>;
   sendMessage: (message: string) => void;
@@ -26,9 +29,10 @@ interface ChatContext {
 
 const chatContext = createContext<ChatContext>({
   rooms: [],
-  messages: [],
-  selectedId: null,
+  selectedRoomId: null,
+  messageGroup: {},
 
+  getMessages: () => null,
   sendMessage: (message: string) => false,
   createRoom: async () => ({ id: "", title: "" }),
   addMember: async (roomId: string, username: string) => false,
@@ -40,10 +44,30 @@ export const useChat = () => useContext(chatContext);
 function Provider({ children }: { children: ReactNode }) {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selectedRoomId, setSelectedRoomId] = useState<string | null>(null);
+
+  const messageGroup: MessageGroup = useMemo(
+    () =>
+      messages.reduce((groupMessages, message) => {
+        const temp = groupMessages[message.roomId];
+        const msgArr = temp ? [...temp, message] : [message];
+        groupMessages[message.roomId] = msgArr;
+        return { ...groupMessages };
+      }, {}),
+
+    [messages]
+  );
+
+  /**
+   * if no room selected it return null;
+   */
+  const getMessages = useCallback(() => {
+    if (!selectedRoomId) return null;
+    return messageGroup[selectedRoomId];
+  }, [messageGroup, selectedRoomId]);
 
   const { send, addEventListener } = useSocket();
-  const { getToken } = useAuth();
+  const { getToken, getUser } = useAuth();
   const { snack } = useLayout();
 
   const addRoom = (room: Room | Room[]) =>
@@ -59,10 +83,15 @@ function Provider({ children }: { children: ReactNode }) {
    * @returns it returns true if operation was success
    */
   const sendMessage = (message: string) => {
-    if (!selectedId) return console.error("no room selected");
+    const creatorUsername = getUser()?.username;
+    if (!creatorUsername)
+      return snack({ message: "no user found, login again!" });
+    if (!selectedRoomId) return snack({ message: "no room selected!" });
+
     const newMessage: Message = {
-      roomId: selectedId,
+      roomId: selectedRoomId,
       text: message,
+      creatorUsername,
       createDate: new Date().toISOString(),
     };
     setMessages((pm) => [...pm, newMessage]);
@@ -101,7 +130,7 @@ function Provider({ children }: { children: ReactNode }) {
   };
 
   const selectRoom = (roomId: string) => {
-    setSelectedId(roomId);
+    setSelectedRoomId(roomId);
   };
 
   useEffect(() => {
@@ -110,7 +139,6 @@ function Provider({ children }: { children: ReactNode }) {
     });
 
     addEventListener("message:receive", (message) => {
-      console.log("new message: ", message);
       setMessages((p) => [...p, message]);
     });
   }, [addEventListener]);
@@ -142,9 +170,10 @@ function Provider({ children }: { children: ReactNode }) {
     <chatContext.Provider
       value={{
         rooms,
-        messages,
-        selectedId,
+        selectedRoomId,
+        messageGroup,
 
+        getMessages,
         sendMessage,
         createRoom,
         addMember,

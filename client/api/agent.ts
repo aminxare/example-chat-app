@@ -27,7 +27,7 @@ const auth = {
       password,
     }),
 
-  verifyToken: (token: string) =>
+  fetchUser: (token: string) =>
     requests.post<User>("/auth/verify-token", { token }),
 };
 

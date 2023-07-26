@@ -2,14 +2,19 @@
 import { User } from "@/@types";
 import agent from "@/api/agent";
 import useLocalStorage from "@/hooks/useLocalStorage";
-import { createContext, useCallback, useContext, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
 interface AuthContext {
   isLogin: boolean;
   login: (username: string, password: string) => void;
   logout: () => void;
   getUser: () => User | null;
-  verifyToken: (token: string) => Promise<boolean>;
   getToken: () => string;
 }
 
@@ -18,7 +23,6 @@ const authContext = createContext<AuthContext>({
   login: async (username: string, password: string) => {},
   logout: () => {},
   getUser: () => null,
-  verifyToken: async (token) => false,
   getToken: () => "",
 });
 
@@ -44,8 +48,8 @@ function Provider({ children }: { children: React.ReactNode }) {
    * else return false
    * @param token string
    */
-  const verifyToken = useCallback(async (token: string) => {
-    const res = await agent.auth.verifyToken(token);
+  const fetchUser = useCallback(async (token: string) => {
+    const res = await agent.auth.fetchUser(token);
     const user = res.data;
 
     if (!user) {
@@ -60,12 +64,16 @@ function Provider({ children }: { children: React.ReactNode }) {
     setToken(null);
   };
 
-  // TODO: send http post to get user with token in header
   const getUser = useCallback(() => {
     return user;
   }, [user]);
 
   const getToken = useCallback(() => token, [token]);
+
+  // verify token
+  useEffect(() => {
+    fetchUser(token)
+  }, [token, fetchUser]);
 
   return (
     <authContext.Provider
@@ -74,7 +82,6 @@ function Provider({ children }: { children: React.ReactNode }) {
         login,
         logout,
         getUser,
-        verifyToken,
         getToken,
       }}
     >

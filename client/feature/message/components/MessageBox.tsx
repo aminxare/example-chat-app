@@ -10,18 +10,19 @@ import {
   Typography,
 } from "@mui/material";
 import { Send } from "@mui/icons-material";
+import { useChat } from "@/context/Chats";
+import { useAuth } from "@/context/Auth";
 
-interface Props {
-  onNewMessage: (msg: string) => void;
-  messages: Message[];
-}
-
-function MessageBox({ messages, onNewMessage }: Props) {
+function MessageBox() {
+  const { getMessages, sendMessage } = useChat();
+  const { getUser } = useAuth();
   const [newMessage, setNewMessage] = useState<string>("");
+
+  const messages = getMessages();
 
   const appendNewMessage = (msg: string) => {
     if (msg.trim() !== "") {
-      onNewMessage(msg);
+      sendMessage(msg);
       setNewMessage("");
     }
   };
@@ -49,20 +50,25 @@ function MessageBox({ messages, onNewMessage }: Props) {
       }}
     >
       <Stack spacing={1}>
-        {messages.map((message, index) => (
-          <Box key={index}>
-            <Card
-              elevation={10}
-              sx={{
-                width: "min-content",
-                padding: "6px",
-                //  marginLeft: "auto"
-              }}
-            >
-              <Typography>{message.text}</Typography>
-            </Card>
-          </Box>
-        ))}
+        {messages &&
+          messages.map((message, index) => (
+            <Box key={index}>
+              <Card
+                elevation={10}
+                sx={{
+                  width: "min-content",
+                  padding: "6px",
+                  backgroundColor:
+                    message.creatorUsername === getUser()!.username
+                      ? "teal"
+                      : "",
+                  //  marginLeft: "auto"
+                }}
+              >
+                <Typography>{message.text}</Typography>
+              </Card>
+            </Box>
+          ))}
       </Stack>
       <Box display="flex">
         <TextField

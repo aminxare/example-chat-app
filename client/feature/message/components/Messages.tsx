@@ -18,12 +18,7 @@ export default function Chat() {
         </Paper>
       </Grid>
       <Grid item xs={12} md={8}>
-        <MessageBox
-          messages={messages}
-          onNewMessage={(msg) => {
-            sendMessage(msg);
-          }}
-        />
+        <MessageBox />
       </Grid>
     </Grid>
   );

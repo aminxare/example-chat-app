@@ -9,11 +9,13 @@ interface sendMessagePayload {
   text: string;
   roomId: string;
   createDate: string;
+  creatorMessage: string;
 }
 
 export const sendMessageListener: socketListenser =
   (socket) => async (incomeMessage: sendMessagePayload, cb) => {
     const user = socket["user"];
+    incomeMessage = { ...incomeMessage, creatorMessage: user.username };
     const { createDate, roomId, text } = incomeMessage;
 
     try {
