@@ -63,14 +63,14 @@ function Nav() {
         <Box
           sx={{
             width: "70vw",
-            height: '100%',
-            padding:"3px",
+            height: "100%",
+            padding: "3px",
             display: "flex",
             flexDirection: "column",
             justifyContent: "space-between",
           }}
         >
-          <MessageList onSelect={() => console.log(100)} />
+          <MessageList />
         </Box>
       </Drawer>
       <AppBar position="sticky">
@@ -119,7 +119,7 @@ function Nav() {
               <MaterialUISwitch
                 sx={{ margin: "0 1em" }}
                 onChange={handleDarkMode}
-                checked = {mode === 'dark'}
+                checked={mode === "dark"}
               />
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
