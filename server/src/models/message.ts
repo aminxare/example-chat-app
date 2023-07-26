@@ -20,7 +20,7 @@ export const schema = () =>
       roomId: {
         type: DataTypes.INTEGER,
       },
-      creatorId: {
+      from: {
         type: DataTypes.INTEGER,
         references: {
           model: user(),

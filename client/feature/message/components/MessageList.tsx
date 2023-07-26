@@ -1,17 +1,11 @@
 import { Theme } from "@emotion/react";
-import { SxProps, Box, List, Stack, Button } from "@mui/material";
-import MessageListItem from "./MessageListItem";
+import { memo, useState } from "react";
 import { useChat } from "@/context/Chats";
+import MessageListItem from "./MessageListItem";
 import CreateRoomDialog from "./CreateRoomDialog";
-import { useState } from "react";
+import { SxProps, Box, List, Stack, Button } from "@mui/material";
 
-function MessageList({
-  onSelect,
-  sx,
-}: {
-  onSelect: (chatId: string) => void;
-  sx?: SxProps<Theme>;
-}) {
+function MessageList({ sx }: { sx?: SxProps<Theme> }) {
   const { createRoom, rooms } = useChat();
   const [open, setOpen] = useState(false);
 
@@ -61,9 +55,9 @@ function MessageList({
       </Box>
 
       <CreateRoomDialog
-        onSubmit={handleSubmitRoom}
         open={open}
         onClose={handleDialogClose}
+        onSubmit={handleSubmitRoom}
       />
       <Button variant="outlined" onClick={handleDialogOpen}>
         Create Room
@@ -72,4 +66,4 @@ function MessageList({
   );
 }
 
-export default MessageList;
+export default memo(MessageList);

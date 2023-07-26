@@ -1,7 +1,7 @@
+import { socketListenser } from "@types";
 import { getSocketId } from "../../../database/redis/connection";
 import room from "../../../models/room";
 import user from "../../../models/user";
-import { Socket } from "socket.io";
 
 interface RoomCreatePayload {
   name: string;
@@ -12,13 +12,6 @@ interface AddMemberPayload {
   username: string;
   roomId: string;
 }
-
-type socketListenser = (
-  socket: Socket
-) => (
-  payload: any,
-  cb: (err: string | null, ...args: any[]) => void
-) => Promise<void> | void;
 
 export const createRoomListener: socketListenser =
   (socket) =>

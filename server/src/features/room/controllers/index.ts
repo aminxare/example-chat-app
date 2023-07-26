@@ -1,7 +1,9 @@
+import { QueryTypes } from "sequelize";
 import { Handler } from "../../../@types";
 import { error, response } from "../../../helpers/response";
 import room from "../../../models/room";
 import user from "../../../models/user";
+import userRoom from "../../../models/userRoom";
 
 interface CreateRoomBody {
   creatorId: number;
@@ -12,6 +14,19 @@ interface CreateRoomBody {
 interface DeleteBody {
   roomId: string;
 }
+
+export const getAllRoom: Handler<null> = async (req, res, next) => {
+  const userReq = req["user"];
+
+  const userObj = await user().findByPk(userReq.id);
+  if (!userObj) return next(error("not authorized, login again", 400));
+
+  const rooms = await room().sequelize?.query(
+    "SELECT rooms.* FROM userRooms RIGHT JOIN rooms ON userRooms.roomId = rooms.id where userRooms.userId = :userId",
+    { type: QueryTypes.SELECT, replacements: { userId: userReq.id } }
+  );
+  return res.status(200).send(response({ rooms }));
+};
 
 export const createRoom: Handler<CreateRoomBody> = async (req, res) => {
   const {
@@ -27,10 +42,10 @@ export const createRoom: Handler<CreateRoomBody> = async (req, res) => {
     name,
     avatar,
   });
-  const userObj = await user().findByPk(req['user'].id);
+  const userObj = await user().findByPk(req["user"].id);
 
   // add creator to room
-  (roomObj as any).addUser(userObj)
+  (roomObj as any).addUser(userObj);
 
   res.status(200).send(response(roomObj.toJSON(), "room created"));
 };
@@ -66,7 +81,7 @@ export const addMember: Handler<{ username: string }> = async (
   const roomObj: any = await room().findByPk(roomId);
   if (!roomObj) return next(error("room not found!", 404));
 
-  await roomObj.addUser((await userObj));
+  await roomObj.addUser(await userObj);
 
   return res.status(200).send(response(true, "added"));
 };

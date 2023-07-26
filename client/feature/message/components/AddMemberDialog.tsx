@@ -20,7 +20,7 @@ const Transition = React.forwardRef(function Transition(
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export default function CreateRoomDialog({ onSubmit, open, onClose }) {
+export default function AddMemberDialog({ onSubmit, open, onClose }) {
   const [name, setName] = React.useState<string>("");
 
   const handleSubmit = () => {

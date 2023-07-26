@@ -14,14 +14,14 @@ export default function Chat() {
         sx={{ display: { xs: "none", md: "block" }, height: "100%" }}
       >
         <Paper elevation={3} sx={{ height: "100%", padding: "0.3em" }}>
-          <MessageList onSelect={(id) => console.log(id)} />
+          <MessageList />
         </Paper>
       </Grid>
       <Grid item xs={12} md={8}>
         <MessageBox
           messages={messages}
           onNewMessage={(msg) => {
-            sendMessage(msg, '');
+            sendMessage(msg);
           }}
         />
       </Grid>
