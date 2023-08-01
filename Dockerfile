@@ -1,9 +1,19 @@
+FROM mariadb:latest as mariadb
+ENV MARIADB_USER=amin
+ENV MARIADB_PASSWORD=aminzare
+ENV MARIADB_ROOT_PASSWORD=aminzare
+ENV MARIADB_DATABASE=test
+EXPOSE 3306
+
+FROM redis:latest
+EXPOSE 6379
+
 #server
 FROM node:bullseye-slim as server-build
 WORKDIR /server
-RUN apt update
-RUN apt install -y mariadb redis
-RUN systemctl start mariadb redis
+# RUN apt update
+# RUN apt install -y mariadb redis
+# RUN systemctl start mariadb redis
 COPY ./server/package*.json .
 COPY ./server/yarn.lock .
 RUN yarn
