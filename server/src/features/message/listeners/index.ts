@@ -33,6 +33,13 @@ export const sendMessageListener: socketListenser =
     }
   };
 
+/**
+ * Send a message to all users in a room who are online.
+ * 
+ * @param incomeMessage - The message payload to send.
+ * @param roomId - The ID of the room to send the message to.
+ * @param socket - The socket instance to use for sending the message.
+ */
 const sendMessage = async (
   incomeMessage: sendMessagePayload,
   roomId: string,

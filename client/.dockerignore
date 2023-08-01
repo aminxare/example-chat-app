@@ -1,3 +1,6 @@
-**/node_module
-**/.next
-**/.gitignore
+# **/node_module
+# **/.next
+# **/.gitignore
+
+# **/.dockerignore
+# **/Dockerfile
