@@ -15,9 +15,7 @@ WORKDIR /server
 # RUN apt install -y mariadb redis
 # RUN systemctl start mariadb redis
 COPY ./server/package*.json .
-COPY ./server/yarn.lock .
-RUN yarn
-RUN corepack && corepack enable
+RUN npm ci
 COPY . .
 
 ENV DATABASE_HOST=database
@@ -37,9 +35,7 @@ CMD ["yarn", "start"]
 FROM node:bullseye-slim as next-build
 WORKDIR /app
 COPY ./client/package*.json .
-COPY ./client/yarn.lock .
-RUN corepack && corepack enable
-RUN yarn
+RUN npm ci
 COPY ./client/ .
 RUN yarn run build
 EXPOSE 3000
