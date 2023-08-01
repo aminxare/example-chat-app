@@ -35,7 +35,7 @@ CMD ["yarn", "start"]
 FROM node:bullseye-slim as next-build
 WORKDIR /app
 COPY ./client/package*.json .
-RUN npm i
+RUN npm i --force
 COPY ./client/ .
 RUN yarn run build
 EXPOSE 3000
