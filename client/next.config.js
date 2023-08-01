@@ -1,8 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    env: {
-        SERVER_URI: "http://localhost:5000"
-    }
-}
+  env: {
+    SERVER_URI: process.env.SERVER_URI || "http://localhost:5000",
+  },
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;

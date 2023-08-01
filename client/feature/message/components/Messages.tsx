@@ -4,7 +4,7 @@ import MessageBox from "./MessageBox";
 import { useChat } from "@/context/Chats";
 
 export default function Chat() {
-  const { messages, sendMessage } = useChat();
+  const { sendMessage } = useChat();
 
   return (
     <Grid container spacing={2} height={"90vh"}>

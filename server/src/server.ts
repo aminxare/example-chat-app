@@ -5,7 +5,14 @@ import { createHttpServer } from "./init/httpServer";
 import { createWSServer } from "./init/WSServer";
 import connect from "./database/redis";
 
-const configServer = () => {
+/**
+ * Configures the server by setting the port, creating an HTTP server,
+ * creating a WebSocket server, and starting the server on the specified port.
+ *
+ * @param {none} - No parameters are required.
+ * @return {none} - No return value.
+ */
+export const configServer = () => {
   const port = Number(process.env.PORT);
   if (!port) {
     console.error("PORT has not setted!");
@@ -22,7 +29,10 @@ const configServer = () => {
 
 const run = async () => {
   dotenv.config();
-  connect();
+  connect({
+    host: process.env.REDIS_HOST,
+    port: +process.env.REDIS_PORT!,
+  });
   await configDatabase();
 
   // uncomment it for use kafka

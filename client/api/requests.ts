@@ -1,7 +1,8 @@
 import axios, { AxiosHeaders, AxiosRequestConfig, AxiosResponse } from "axios";
 import { Response } from "./@types";
 
-axios.defaults.baseURL = "http://localhost:5000/api";
+axios.defaults.baseURL =
+  (process.env.SERVER_URI || "http://localhost:5000") + "/api";
 const responseBody = <T>(response: AxiosResponse<T>) => response.data;
 
 async function get<T>(url: string, config?: AxiosRequestConfig) {
