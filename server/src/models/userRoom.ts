@@ -8,11 +8,21 @@ export const priority = 3;
 const table = () => ({
   userId: {
     type: DataTypes.INTEGER,
+    primaryKey: true,
     references: {
       model: user(),
       key: "id",
     },
-  }
+  },
+
+  roomId: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    references: {
+      model: room(),
+      key: "id",
+    },
+  },
 });
 
 export const schema = () =>

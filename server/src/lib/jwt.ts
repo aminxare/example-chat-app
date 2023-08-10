@@ -8,7 +8,7 @@ const secrectKey = () => {
 
 const sign = (data: object, expiresIn?: number | string) => {
   const secretKey = secrectKey();
-  expiresIn = expiresIn || Number(process.env.JWT_EXPIRE) || "1h";
+  expiresIn = expiresIn || Number(process.env.JWT_EXPIRE) || process.env.JWT_EXPIRE || "1h";
   return jwt.sign(data, secretKey, { expiresIn: expiresIn });
 };
 
