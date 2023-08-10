@@ -25,8 +25,9 @@ services:
     depends_on:
       - redis
       - database
-    env_file:
-      - ./server/.env
+    # uncomment this to use .env file
+    # env_file: 
+    #   - ./server/.env
 
   client: 
     build: 
@@ -36,5 +37,6 @@ services:
       - 3000:3000
     depends_on:
       - server
-    env_file:
-      - ./client/.env
+    # uncomment this to use .env file
+    # env_file:
+    #   - ./client/.env
