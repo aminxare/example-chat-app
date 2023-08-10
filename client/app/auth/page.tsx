@@ -64,7 +64,7 @@ const Page = () => {
 
             <TextField
               label="Password"
-              type="text"
+              type="password"
               id="txtPassword"
               onChange={handelPassword}
               variant="standard"
